@@ -41,3 +41,22 @@ def showPokemon(id:int):
         for row in reader:
             if int(row["id"]) == id:
                 return PokemonID(**row)
+            
+            
+def deletePokemon(id:int):
+    pokemon_deleted: Optional[PokemonBase]=None
+    pokemons = showPokemons()
+    with open(CSV_FILE, mode="w", newline='') as file:
+        writer = csv.DictWriter(file,fieldnames=columns)
+        writer.writeheader()
+        for pokemon_ in pokemons:
+            if pokemon_.id == id:
+                pokemon_deleted = pokemon_
+                continue
+            writer.writerow(pokemon_.model_dump())
+    if pokemon_deleted:
+        dict_pokemon_no_id = pokemon_deleted.model_dump()
+        del dict_pokemon_no_id["id"]
+        return PokemonBase(**dict_pokemon_no_id)
+
+    
