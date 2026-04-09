@@ -29,7 +29,10 @@ def createPokemon(pokemon:PokemonBase):
     savePokemonID(new_pokemon)
     return new_pokemon
         
-        
+def showPokemons():
+    with open(CSV_FILE) as file:
+        reader = csv.DictReader(file)
+        return [PokemonID(**row) for row in reader]
         
         
         
