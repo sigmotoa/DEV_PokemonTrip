@@ -13,7 +13,7 @@ def newID():
             return max_id+1
     except (FileNotFoundError, csv.Error):
         return 1
-        
+
 
 def savePokemonID(pokemon:PokemonID):
     pokedex_exists = os.path.exists(CSV_FILE)
@@ -28,13 +28,16 @@ def createPokemon(pokemon:PokemonBase):
     new_pokemon = PokemonID(id=id,**pokemon.model_dump())
     savePokemonID(new_pokemon)
     return new_pokemon
-        
+
 def showPokemons():
     with open(CSV_FILE) as file:
         reader = csv.DictReader(file)
         return [PokemonID(**row) for row in reader]
         
-        
-        
-        
-        
+
+def showPokemon(id:int):
+    with open(CSV_FILE) as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if int(row["id"]) == id:
+                return PokemonID(**row)

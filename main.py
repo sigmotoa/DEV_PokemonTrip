@@ -1,6 +1,6 @@
 from typing import List
-from fastapi import FastAPI
-from operations import createPokemon, showPokemons
+from fastapi import FastAPI, HTTPException
+from operations import createPokemon, showPokemons, showPokemon
 from models import (PokemonBase, PokemonID)
 
 app = FastAPI()
@@ -14,6 +14,12 @@ async def create_pokemon(pokemon:PokemonBase):
 async def show_pokemons():
     return showPokemons()
 
+@app.get("/pokemon/{id}", response_model=PokemonID)
+async def show_one_pokemon(id:int):
+    pokemon = showPokemon(id)
+    if not(pokemon):
+        raise HTTPException(status_code=404, detail=f"{id} Pokemon not found")
+    return pokemon
 
 @app.get("/")
 async def root():
