@@ -19,3 +19,9 @@ class PokemonBase(SQLModel):
 
 class PokemonID(PokemonBase, table=True):
     id: int | None = Field(default=None, primary_key=True, gt=0)
+
+class PokemonUpdate(PokemonBase):
+    type: PokemonType = Field(None, exclude=True)
+    name: str | None = Field(None,exclude=True)
+    level : int | None = Field(default=None,gt=1,
+                              le=100)
