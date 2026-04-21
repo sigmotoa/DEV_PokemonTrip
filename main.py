@@ -1,9 +1,11 @@
 from typing import List
 from fastapi import FastAPI, HTTPException
+from sqlmodel.orm import session
+
 from operations_csv import createPokemon, showPokemons, showPokemon, deletePokemon
 from models import (PokemonBase, PokemonID)
 from db import SessionDep, create_all_tables
-from operations_db import createPokemon_db
+from operations_db import createPokemon_db, show_all_pokemon_db
 
 app = FastAPI(lifespan=create_all_tables)
 
@@ -13,8 +15,8 @@ async def create_pokemon(pokemon:PokemonBase, session:SessionDep):
 
 
 @app.get("/pokemon", response_model=list[PokemonID])
-async def show_pokemons():
-    return showPokemons()
+async def show_pokemons(session:SessionDep):
+    return show_all_pokemon_db(session)
 
 @app.get("/pokemon/{id}", response_model=PokemonID)
 async def show_one_pokemon(id:int):

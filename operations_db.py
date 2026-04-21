@@ -10,3 +10,6 @@ def createPokemon_db(pokemon:PokemonBase, session:Session):
     session.refresh(new_pokemon)
 
     return new_pokemon
+
+def show_all_pokemon_db(session: Session):
+    return session.query(PokemonID).all()
