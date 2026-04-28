@@ -1,18 +1,17 @@
-from typing import List
 from fastapi import FastAPI, HTTPException
 from sqlmodel import Session
-from sqlmodel.orm import session
 
-from operations_csv import createPokemon, showPokemons, showPokemon, deletePokemon
-from models import (PokemonBase,
+from models.pokemon import (PokemonBase,
                     PokemonID,
                     PokemonUpdate)
+from models.trainer import TrainerBase, TrainerID
 from db import SessionDep, create_all_tables
-from operations_db import (createPokemon_db,
-                           show_all_pokemon_db,
-                           find_one_pokemon_db,
-                           update_one_pokemon_db,
-                           kill_one_pokemon_db)
+from operations.operations_pokemon_db import (createPokemon_db,
+                                              show_all_pokemon_db,
+                                              find_one_pokemon_db,
+                                              update_one_pokemon_db,
+                                              kill_one_pokemon_db)
+from operations.operations_trainer_db import createTrainer
 
 app = FastAPI(lifespan=create_all_tables)
 
@@ -59,3 +58,8 @@ async def root():
 @app.get("/hello/{name}")
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
+
+
+@app.post("/trainer", response_model=TrainerID)
+def creater_trainer(trainer:TrainerBase, session: SessionDep):
+    return createTrainer(trainer, session)
