@@ -11,14 +11,18 @@ from operations.operations_pokemon_db import (createPokemon_db,
                                               find_one_pokemon_db,
                                               update_one_pokemon_db,
                                               kill_one_pokemon_db)
-from operations.operations_trainer_db import createTrainer
+from operations.operations_trainer_db import createTrainer, findTrainer
 
 app = FastAPI(lifespan=create_all_tables)
 
 
 @app.post("/pokemon", response_model=PokemonID)
 async def create_pokemon(pokemon: PokemonBase, session: SessionDep):
-    return createPokemon_db(pokemon, session)
+    trainer = findTrainer(pokemon.trainer_id, session)
+    if trainer:
+        return createPokemon_db(pokemon, session)
+    else:
+        raise HTTPException(status_code=404, detail="trainer not found")
 
 
 @app.get("/pokemon", response_model=list[PokemonID])
