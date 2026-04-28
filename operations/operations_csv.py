@@ -2,7 +2,7 @@ import os
 import csv
 from models import *
 
-CSV_FILE = "pokedex.csv"
+CSV_FILE = "../pokedex.csv"
 columns = ["id", "name", "type", "level"]
 
 def newID():

@@ -1,7 +1,7 @@
 from sqlalchemy.exc import NoResultFound
 from sqlmodel import Session, select
 
-from models import PokemonBase, PokemonID, PokemonUpdate
+from models.pokemon import PokemonBase, PokemonID, PokemonUpdate
 
 
 def createPokemon_db(pokemon: PokemonBase, session: Session):

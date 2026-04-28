@@ -1,7 +1,7 @@
 # from pydantic import BaseModel, Field
 from email.policy import default
 
-from pokemon_types import PokemonType
+from models.pokemon_types import PokemonType
 from typing import Optional
 from sqlmodel import SQLModel, Field
 
@@ -15,6 +15,9 @@ class PokemonBase(SQLModel):
     level: int | None = Field(default=None,
                               gt=0,
                               le=100)
+    trainer_id:int | None = Field(foreign_key="trainerid.id")
+    in_pocket: bool = Field(default=False)
+
 
 
 class PokemonID(PokemonBase, table=True):
@@ -25,3 +28,4 @@ class PokemonUpdate(PokemonBase):
     name: str | None = Field(None,exclude=True)
     level : int | None = Field(default=None,gt=1,
                               le=100)
+    in_pocket: bool = Field(None, exclude=True)
