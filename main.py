@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from sqlmodel import Session
 
 from models.pokemon import (PokemonBase,
@@ -12,8 +12,15 @@ from operations.operations_pokemon_db import (createPokemon_db,
                                               update_one_pokemon_db,
                                               kill_one_pokemon_db)
 from operations.operations_trainer_db import createTrainer, findTrainer
+from utils import save_img_local
 
 app = FastAPI(lifespan=create_all_tables)
+
+
+@app.post("/image/local")
+async def image_save_local(img: UploadFile = File(...)):
+    path = save_img_local(img)
+    return {"path for your image": path}
 
 
 @app.post("/pokemon", response_model=PokemonID)
