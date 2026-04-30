@@ -12,7 +12,7 @@ from operations.operations_pokemon_db import (createPokemon_db,
                                               update_one_pokemon_db,
                                               kill_one_pokemon_db)
 from operations.operations_trainer_db import createTrainer, findTrainer
-from utils import save_img_local
+from utils import save_img_local, save_img_remote
 
 app = FastAPI(lifespan=create_all_tables)
 
@@ -69,6 +69,11 @@ async def root():
 @app.get("/hello/{name}")
 async def say_hello(name: str):
     return {"message": f"Hello {name}"}
+
+@app.post("/image/remote")
+async def image_save_remote(file:UploadFile = File(...)):
+    url_img = save_img_remote(file)
+    return {"url for your image":url_img}
 
 
 @app.post("/trainer", response_model=TrainerID)
