@@ -53,7 +53,13 @@ def kill_one_pokemon_db(id: int, session: Session):
 
 
 
-
-
-
+def update_pokemon_image_db(id: int, image_url: str, session: Session):
+    pokemon = find_one_pokemon_db(id, session)
+    if pokemon is None:
+        return None
+    pokemon.image_url = image_url
+    session.add(pokemon)
+    session.commit()
+    session.refresh(pokemon)
+    return pokemon
 
