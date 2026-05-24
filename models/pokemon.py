@@ -17,6 +17,7 @@ class PokemonBase(SQLModel):
                               le=100)
     trainer_id:int | None = Field(foreign_key="trainerid.id")
     in_pocket: bool = Field(default=False)
+    image_url: str | None = Field(default=None)
 
 
 
