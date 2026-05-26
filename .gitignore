@@ -3,8 +3,8 @@
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
 
 
-index.html
-form.html
+templates/index.html
+templates/form.html
 /files/*
 .env
 
