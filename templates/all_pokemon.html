@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    {% for poke in pokemon_list %}
+    {% include 'pokemon_card.html' %}
+    {% endfor %}
+{% endblock %}

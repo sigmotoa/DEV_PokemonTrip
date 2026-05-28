@@ -15,7 +15,7 @@ class PokemonBase(SQLModel):
     level: int | None = Field(default=None,
                               gt=0,
                               le=100)
-    trainer_id:int | None = Field(foreign_key="trainerid.id")
+    ##trainer_id:int | None = Field(foreign_key="trainerid.id")
     in_pocket: bool = Field(default=False)
 
 

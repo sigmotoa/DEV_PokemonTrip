@@ -1,13 +1,16 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Request
+from fastapi import FastAPI, HTTPException, UploadFile, File, Request, Form, Depends
+from typing import Optional
+from fastapi.params import Depends
 from sqlmodel import Session
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from models.pokemon import (PokemonBase,
                             PokemonID,
                             PokemonUpdate)
+from models.pokemon_types import PokemonType
 from models.trainer import TrainerBase, TrainerID
-from db import SessionDep, create_all_tables
+from db import SessionDep, create_all_tables, get_session
 from operations.operations_pokemon_db import (createPokemon_db,
                                               show_all_pokemon_db,
                                               find_one_pokemon_db,
@@ -38,12 +41,12 @@ async def create_pokemon(pokemon: PokemonBase, session: SessionDep):
 
 @app.get("/pokemon", response_model=list[PokemonID])
 async def show_pokemons(session: SessionDep):
-    return show_all_pokemon_db(session)
+    return await show_all_pokemon_db(session)
 
 
 @app.get("/pokemon/{id}", response_model=PokemonID)
 async def show_one_pokemon(id: int, session: SessionDep):
-    pokemon = find_one_pokemon_db(id, session)
+    pokemon = await find_one_pokemon_db(id, session)
     if not (pokemon):
         raise HTTPException(status_code=404, detail=f"{id} Pokemon not found")
     return pokemon
@@ -63,11 +66,6 @@ async def delete_one_pokemon(id: int, session: SessionDep):
     if not (deleted):
         raise HTTPException(status_code=404, detail=f"{id} Pokemon not found")
     return deleted
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
 
 
 @app.get("/hello/{name}")
@@ -127,11 +125,43 @@ async def htmlpokemon(request: Request, id: int, session: SessionDep):
 
 
 @app.get("/htmlpokemon", response_class=HTMLResponse)
-async def show_pokemons(request:Request, session: SessionDep):
+async def show_pokemons(request: Request, session: SessionDep):
     pokemons = show_all_pokemon_db(session)
 
     return templates.TemplateResponse(
-        request, "pokemones.html",{"pokemones": pokemons} )
+        request, "pokemones.html", {"pokemones": pokemons})
 
 
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse({"request": request}, "base.html")
 
+
+@app.get("/pokemons", response_class=HTMLResponse)
+async def show_all_pokemons_html(request: Request, session: Session = Depends(get_session)):
+    pokemons = await show_all_pokemon_db(session)
+    print(pokemons)
+    return templates.TemplateResponse(request, "all_pokemon.html", {"pokemon_list": pokemons})
+
+
+@app.get("/pokemons/{id}", response_class=HTMLResponse)
+async def show_one_pokemon_html(request: Request, id: int, session: SessionDep):
+    one_pokemon = await find_one_pokemon_db(id, session)
+    return templates.TemplateResponse(request, "one_pokemon.html", {"poke": one_pokemon})
+
+
+@app.get("/pokemons/create/", response_class=HTMLResponse)
+async def catch_one_pokemon_html(request: Request):
+    return templates.TemplateResponse(request, "catch.html")
+
+
+@app.post("/pokemons/create/", response_class=HTMLResponse)
+async def pokemon_catched(
+        name: str = Form(),
+        type: Optional[str] = Form(None),
+        level: Optional[int] = Form(None),
+        session: Session = Depends(get_session)):
+    new_pokemon = PokemonBase(name=name, type=type, level=level)
+    catched = await create_pokemon(new_pokemon, session)
+
+    return RedirectResponse("/pokemons", status_code=302)
