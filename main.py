@@ -15,8 +15,9 @@ from operations.operations_pokemon_db import (createPokemon_db,
                                               show_all_pokemon_db,
                                               find_one_pokemon_db,
                                               update_one_pokemon_db,
-                                              kill_one_pokemon_db)
-from operations.operations_trainer_db import createTrainer, findTrainer
+                                              kill_one_pokemon_db,
+                                              update_pokemon_image_db)
+from operations.operations_trainer_db import createTrainer, findTrainer, update_trainer_image_db
 from utils import save_img_local, save_img_remote
 
 app = FastAPI(lifespan=create_all_tables)
@@ -82,6 +83,22 @@ async def image_save_remote(file: UploadFile = File(...)):
 @app.post("/trainer", response_model=TrainerID)
 def creater_trainer(trainer: TrainerBase, session: SessionDep):
     return createTrainer(trainer, session)
+
+@app.post("/pokemon/{id}/image", response_model=PokemonID)
+async def upload_pokemon_image(id: int, session: SessionDep, file: UploadFile = File(...)):
+    pokemon = find_one_pokemon_db(id, session)
+    if not pokemon:
+        raise HTTPException(status_code=404, detail=f"{id} Pokemon not found")
+    url_img = save_img_remote(file)
+    return update_pokemon_image_db(id, url_img, session)
+
+@app.post("/trainer/{id}/image", response_model=TrainerID)
+async def upload_trainer_image(id: int, session: SessionDep, file: UploadFile = File(...)):
+    trainer = findTrainer(id, session)
+    if not trainer:
+        raise HTTPException(status_code=404, detail=f"{id} Trainer not found")
+    url_img = save_img_remote(file)
+    return update_trainer_image_db(id, url_img, session)
 
 
 @app.get("/html", response_class=HTMLResponse)

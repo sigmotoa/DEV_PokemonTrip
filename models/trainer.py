@@ -4,6 +4,7 @@ class TrainerBase(SQLModel):
     name: str | None = Field(default=None,
                              min_length=5,
                              max_length=100)
+    image_url: str | None = Field(default=None)
 
 class TrainerID(TrainerBase, table=True):
     id: int | None = Field(default=None, primary_key=True, gt=0)
