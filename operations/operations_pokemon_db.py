@@ -4,16 +4,16 @@ from sqlmodel import Session, select
 from models.pokemon import PokemonBase, PokemonID, PokemonUpdate
 
 
-def createPokemon_db(pokemon: PokemonBase, session: Session):
+async def createPokemon_db(pokemon: PokemonBase, session: Session):
     new_pokemon = PokemonID.model_validate(pokemon)
     session.add(new_pokemon)
     session.commit()
-    session.refresh(new_pokemon)
+    await session.refresh(new_pokemon)
 
     return new_pokemon
 
 
-def show_all_pokemon_db(session: Session):
+async def show_all_pokemon_db(session: Session):
     # return session.query(PokemonID).all()
     # session.exec(select(PokemonID).gr)
     return session.exec(select(PokemonID))
@@ -22,7 +22,7 @@ def show_all_pokemon_db(session: Session):
     # return results
 
 
-def find_one_pokemon_db(id: int, session: Session):
+async def find_one_pokemon_db(id: int, session: Session):
     try:
         return session.get_one(PokemonID, id)
     except NoResultFound:
@@ -30,7 +30,7 @@ def find_one_pokemon_db(id: int, session: Session):
 
 
 def update_one_pokemon_db(id: int, new_pokemon: PokemonUpdate, session: Session):
-    pokemon=find_one_pokemon_db(id, session)
+    pokemon = find_one_pokemon_db(id, session)
     if pokemon is None:
         return None
     pokemon_update = new_pokemon.model_dump(exclude_unset=True)
@@ -44,7 +44,7 @@ def update_one_pokemon_db(id: int, new_pokemon: PokemonUpdate, session: Session)
 
 def kill_one_pokemon_db(id: int, session: Session):
     try:
-        pokemon=session.get_one(PokemonID, id)
+        pokemon = session.get_one(PokemonID, id)
         session.delete(pokemon)
         session.commit()
         return pokemon

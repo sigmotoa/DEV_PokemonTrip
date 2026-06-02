@@ -1,0 +1,11 @@
+{% include 'header.html' %}
+
+<img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/i/d96bb958-4e6c-4ce0-9447-fbe226fbbecf/dgksse7-fa2642a1-d928-4452-a046-00fd432440b1.jpg/v1/fill/w_1192,h_670,q_70,strp/gta_6_animated_wallpaper_grand_theft_auto_6_by_favorisxp_dgksse7-pre.jpg" alt="GTA6">
+
+<ul>
+    {% for poke in pokemones %}
+    <li> {{ poke.name }} </li>
+    {% endfor %}
+</ul>
+
+{% include 'footer.html' %}

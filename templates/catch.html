@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <form method="post" action="/pokemons/create/">
+
+        <label>Nombre</label>
+        <input name="name" id="name">
+        <label>Tipo</label>
+        <input name="type" id="type">
+        <label>Level</label>
+        <input name="level" id="level">
+
+        <button type="submit" class="btn btn-success">Success</button>
+    </form>
+
+
+{% endblock %}
